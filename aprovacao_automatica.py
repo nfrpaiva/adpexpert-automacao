@@ -11,7 +11,7 @@ password = os.getenv('ADP_PASSWORD')
 options = webdriver.ChromeOptions()
 
 options.add_argument('window-size=1920x1080')
-#options.add_argument('headless')
+options.add_argument('headless')
 driver = webdriver.Chrome(options=options)
 driver.maximize_window()
 driver.get('http://www.adpexpert.com.br')
@@ -104,7 +104,17 @@ for inconsistencia in element_inconsistencias:
     colaborador['horas_extras'] = str(horas_extras)
     dados.append(colaborador)
 
-    if not possui_horas_extras: aprovar(element_sibling)
+    if not possui_horas_extras: 
+        aprovar(element_sibling)
+    else:
+        print (f"Entrada: {colaborador['entrada']} - Saída: {colaborador['saida']} Final de semana {colaborador['final_de_semana']} - Período Trabalhado: {colaborador['periodo_trabalhado']} - Horas Extras: {colaborador['horas_extras']} - Colaborador: {colaborador['nome']} ")
+        print("Aprovar? s/n")
+        acao = input()
+        if acao.lower() == 's':
+            print("Aprovando...")
+            aprovar(element_sibling)
+        else:
+            print("Não aprovando...")
 
 for item in dados:
     print(f"Entrada: {item['entrada']} - Saída: {item['saida']} Final de semana {item['final_de_semana']} - Período Trabalhado: {item['periodo_trabalhado']} - Horas Extras: {item['horas_extras']} - Colaborador: {item['nome']} ")
