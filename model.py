@@ -1,12 +1,17 @@
 class Inconsistencia:
-    def __init__(self, nome, entrada, saida, eh_final_de_semana, periodo_trabalhado, possui_horas_extras, horas_extras):
+    def __init__(self, nome, horarios, eh_final_de_semana, periodo_trabalhado, possui_horas_extras, horas_extras):
         self.nome = nome
-        self.entrada = entrada
-        self.saida = saida
+        self.horarios = horarios
         self.eh_final_de_semana = eh_final_de_semana
         self.periodo_trabalhado = periodo_trabalhado
         self.possui_horas_extras = possui_horas_extras
         self.horas_extras = horas_extras
 
+    def str_horarios(self):
+        str_horarios = []
+        for horario in self.horarios:
+            str_horarios.append(f"{str(horario[0])} - {str(horario[1])}")
+        return "//".join(str_horarios)
+
     def __str__(self):
-        return f"Entrada: {self.entrada} - Saída: {self.saida} Final de semana {self.eh_final_de_semana} - Período Trabalhado: {self.periodo_trabalhado} - Horas Extras: {self.horas_extras} - Colaborador: {self.nome}"
+        return f"Horarios: {self.str_horarios()} Final de semana {self.eh_final_de_semana} - Período Trabalhado: {self.periodo_trabalhado} - Horas Extras: {self.horas_extras} - Colaborador: {self.nome}"

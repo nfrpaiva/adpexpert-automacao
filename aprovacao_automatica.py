@@ -54,13 +54,19 @@ def to_datetime(str_date):
     return datetime.datetime.strptime(str_date, "%Y-%m-%dT%H:%M:%S.%f")
 
 
-def calcular_horas(str_entrada, str_saida):
-    datetime_entrada = to_datetime(str_entrada)
-    datetime_saida = to_datetime(str_saida)
-
+def calcular_horas(str_horarios):
+    horarios = []
     periodo_de_trabalho = datetime.timedelta(hours=9, minutes=15)
-    periodo_trabalhado = datetime_saida - datetime_entrada
+    periodo_trabalhado = datetime.timedelta(hours=0)
 
+    for str_inicio, str_fim  in str_horarios:
+        dt_inicio = to_datetime(str_inicio)
+        dt_fim = to_datetime(str_fim)
+        horarios.append((dt_inicio, dt_fim))
+        periodo_trabalhado += dt_fim - dt_inicio
+
+    datetime_entrada = horarios[0][0]
+    
     list_final_de_semana = [5, 6]
     eh_final_de_semana = True if list_final_de_semana.count(
         datetime_entrada.weekday()) else False
@@ -75,7 +81,7 @@ def calcular_horas(str_entrada, str_saida):
         possui_horas_extras = True
     elif (periodo_trabalhado > periodo_de_trabalho):
         possui_horas_extras = True
-    return (datetime_entrada, datetime_saida, periodo_trabalhado, eh_final_de_semana, horas_extras, possui_horas_extras)
+    return (horarios, periodo_trabalhado, eh_final_de_semana, horas_extras, possui_horas_extras)
 
 
 def obter_nome_colaborador(tr_inconsistencia):
@@ -92,11 +98,17 @@ def obter_siblig(tr_inconsistencia):
 
 
 def obter_horarios(element_sibling):
-    str_entrada = element_sibling.find_element_by_xpath(
-        ".//time[@data-testid='txt_timesheet_exp_receipt-in-out-0-type']").get_attribute("datetime")
-    str_saida = element_sibling.find_element_by_xpath(
-        ".//time[@data-testid='txt_timesheet_exp_receipt-in-out-1-type']").get_attribute("datetime")
-    return (str_entrada, str_saida)
+
+    els = element_sibling.find_elements_by_xpath(".//time[ contains(@data-testid,'type')]")
+
+    gen_entradas = ( e.get_attribute("datetime") for i,e in  enumerate(els) if i % 2 == 0)
+    gen_saidas = ( e.get_attribute("datetime") for i,e in  enumerate(els) if i % 2 != 0)
+
+
+    str_entradas = tuple(gen_entradas)
+    str_saidas = tuple(gen_saidas)
+
+    return tuple(zip(str_entradas, str_saidas))
 
 
 def aprovar(element_sibling):
@@ -115,15 +127,15 @@ def executar():
     for inconsistencia in element_inconsistencias:
 
         element_sibling = obter_siblig(inconsistencia)
-        str_entrada, str_saida = obter_horarios(element_sibling)
-        datetime_entrada, datetime_saida, periodo_trabalhado, eh_final_de_semana, horas_extras, possui_horas_extras = calcular_horas(
-            str_entrada, str_saida)
+        str_horarios = obter_horarios(element_sibling)
+        horarios, periodo_trabalhado, eh_final_de_semana, horas_extras, possui_horas_extras = calcular_horas(str_horarios)
 
         nome = obter_nome_colaborador(inconsistencia)
         inconsistencia = Inconsistencia(
             nome,
-            datetime_entrada,
-            datetime_saida,
+            horarios,
+            # datetime_entrada,
+            # datetime_saida,
             eh_final_de_semana,
             str(periodo_trabalhado),
             possui_horas_extras,
@@ -132,10 +144,10 @@ def executar():
         dados.append(inconsistencia)
 
         if not possui_horas_extras:
+            print(f"Aprovando automaticamente - {inconsistencia.nome} - {inconsistencia.str_horarios()} - Extra {inconsistencia.horas_extras} ")
             aprovar(element_sibling)
         else:
-            print(inconsistencia)
-            print("Aprovar? s/n")
+            print(f"{'Aprovação manual'.ljust(25, ' ')} - {inconsistencia.nome} - {inconsistencia.str_horarios()} - Extra {inconsistencia.horas_extras} - Aprova? s/n")
             acao = input()
             if acao.lower() == 's':
                 print("Aprovando...")
@@ -143,8 +155,8 @@ def executar():
             else:
                 print("Não aprovando...")
 
-    for item in dados:
-        print(item)
+    # for item in dados:
+    #     print(item)
     driver.quit()
 
 
