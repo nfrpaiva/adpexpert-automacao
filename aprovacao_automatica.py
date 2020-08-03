@@ -12,7 +12,7 @@ password = os.getenv('ADP_PASSWORD')
 options = webdriver.ChromeOptions()
 
 options.add_argument('window-size=1920x1080')
-# options.add_argument('headless')
+options.add_argument('headless')
 
 
 def abrir_pagina():
@@ -116,14 +116,8 @@ def aprovar(element_sibling):
         ".//button[@data-testid='btn_timesheet_exp_approve']").click()
     time.sleep(1)
 
-
-def executar():
-    driver = abrir_pagina()
-    login(driver)
-    ir_para_inconsistencias(driver)
-    element_inconsistencias = obter_inconsistencias(driver)
+def processa_inconsistencias(element_inconsistencias):
     dados = []
-
     for inconsistencia in element_inconsistencias:
 
         element_sibling = obter_siblig(inconsistencia)
@@ -134,8 +128,6 @@ def executar():
         inconsistencia = Inconsistencia(
             nome,
             horarios,
-            # datetime_entrada,
-            # datetime_saida,
             eh_final_de_semana,
             str(periodo_trabalhado),
             possui_horas_extras,
@@ -155,9 +147,19 @@ def executar():
             else:
                 print("Não aprovando...")
 
-    # for item in dados:
-    #     print(item)
-    driver.quit()
+def executar():
+    try:
+        driver = abrir_pagina()
+        login(driver)
+        ir_para_inconsistencias(driver)
+        element_inconsistencias = obter_inconsistencias(driver)
+        dados =  processa_inconsistencias(element_inconsistencias)
+    except Exception as e:
+        print("Ocorreu um erro: ",e)
+    else:
+        print("Finalizado sem nenhum erro")
+    finally:
+        driver.quit()
 
 
 if __name__ == "__main__":
