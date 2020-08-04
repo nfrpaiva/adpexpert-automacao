@@ -14,16 +14,16 @@ options = webdriver.ChromeOptions()
 options.add_argument('window-size=1920x1080')
 options.add_argument('headless')
 
+driver = webdriver.Chrome(options=options)
 
 def abrir_pagina():
-    driver = webdriver.Chrome(options=options)
     driver.maximize_window()
     driver.get('http://www.adpexpert.com.br')
     time.sleep(1)
     return driver
 
 
-def login(driver):
+def login():
     # Preencher dados para Loging
     element_login = driver.find_element_by_id('login')
     element_password = driver.find_element_by_id('login-pw')
@@ -37,7 +37,7 @@ def login(driver):
     time.sleep(2)
 
 
-def ir_para_inconsistencias(driver):
+def ir_para_inconsistencias():
     # Clicar no botao colaborador para exibir o botão Gerente
     element_colaborado = driver.find_element_by_xpath(
         "//button[@data-testid='btn_navigation_side_bar-employee-selected-desktop']").click()
@@ -46,7 +46,7 @@ def ir_para_inconsistencias(driver):
     time.sleep(2)
 
 
-def obter_inconsistencias(driver):
+def obter_inconsistencias():
     return driver.find_elements_by_xpath("//tr[contains(@data-testid,'table-tr_management_inconsistency')]")
 
 
@@ -149,10 +149,10 @@ def processa_inconsistencias(element_inconsistencias):
 
 def executar():
     try:
-        driver = abrir_pagina()
-        login(driver)
-        ir_para_inconsistencias(driver)
-        element_inconsistencias = obter_inconsistencias(driver)
+        abrir_pagina()
+        login()
+        ir_para_inconsistencias()
+        element_inconsistencias = obter_inconsistencias()
         dados =  processa_inconsistencias(element_inconsistencias)
     except Exception as e:
         print("Ocorreu um erro: ",e)
