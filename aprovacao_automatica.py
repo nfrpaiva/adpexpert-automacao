@@ -1,5 +1,6 @@
 from model import Inconsistencia
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 import time
 import datetime
 from dotenv import load_dotenv
@@ -120,12 +121,15 @@ def aprovar(element_sibling):
 def processa_inconsistencias(element_inconsistencias):
     dados = []
     for inconsistencia in element_inconsistencias:
-
-        element_sibling = obter_siblig(inconsistencia)
+        nome = obter_nome_colaborador(inconsistencia)
+        try:
+            element_sibling = obter_siblig(inconsistencia)
+        except NoSuchElementException as e:
+            print(f"Existe um apontamento inconsistente para {nome}, entretando não há sugestão de ajuste para ser aprovado")
+            continue
         str_horarios = obter_horarios(element_sibling)
         horarios, periodo_trabalhado, eh_final_de_semana, horas_extras, possui_horas_extras = calcular_horas(str_horarios)
 
-        nome = obter_nome_colaborador(inconsistencia)
         inconsistencia = Inconsistencia(
             nome,
             horarios,
@@ -157,7 +161,7 @@ def executar():
         element_inconsistencias = obter_inconsistencias()
         dados =  processa_inconsistencias(element_inconsistencias)
     except Exception as e:
-        print("Ocorreu um erro: ", e)
+        print(f"Ocorreu um erro ({type(e)}): ", e)
     else:
         print("Finalizado sem nenhum erro")
     finally:
