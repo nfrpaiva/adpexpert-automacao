@@ -58,15 +58,16 @@ def calcular_horas(str_horarios):
     horarios = []
     periodo_de_trabalho = datetime.timedelta(hours=9, minutes=15)
     periodo_trabalhado = datetime.timedelta(hours=0)
+    periodo_tolerancia = datetime.timedelta(hours=0, minutes=10)
 
-    for str_inicio, str_fim  in str_horarios:
+    for str_inicio, str_fim in str_horarios:
         dt_inicio = to_datetime(str_inicio)
         dt_fim = to_datetime(str_fim)
         horarios.append((dt_inicio, dt_fim))
         periodo_trabalhado += dt_fim - dt_inicio
 
     datetime_entrada = horarios[0][0]
-    
+
     list_final_de_semana = [5, 6]
     eh_final_de_semana = True if list_final_de_semana.count(
         datetime_entrada.weekday()) else False
@@ -79,7 +80,7 @@ def calcular_horas(str_horarios):
     if (eh_final_de_semana):
         horas_extras = periodo_trabalhado
         possui_horas_extras = True
-    elif (periodo_trabalhado > periodo_de_trabalho):
+    elif (periodo_trabalhado > (periodo_de_trabalho + periodo_tolerancia)):
         possui_horas_extras = True
     return (horarios, periodo_trabalhado, eh_final_de_semana, horas_extras, possui_horas_extras)
 
@@ -147,6 +148,7 @@ def processa_inconsistencias(element_inconsistencias):
             else:
                 print("Não aprovando...")
 
+
 def executar():
     try:
         abrir_pagina()
@@ -155,7 +157,7 @@ def executar():
         element_inconsistencias = obter_inconsistencias()
         dados =  processa_inconsistencias(element_inconsistencias)
     except Exception as e:
-        print("Ocorreu um erro: ",e)
+        print("Ocorreu um erro: ", e)
     else:
         print("Finalizado sem nenhum erro")
     finally:
