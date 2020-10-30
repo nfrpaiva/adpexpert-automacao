@@ -90,18 +90,18 @@ def obter_nome_colaborador(tr_inconsistencia):
     return tr_inconsistencia.find_element_by_xpath(".//div[starts-with(@data-testid, 'txt_management_inconsistency') and contains(@data-testid,'colaborator-name')]").text
 
 
-def obter_siblig(tr_inconsistencia):
+def obter_element_suggestion(tr_inconsistencia):
     element_button_ajustes = tr_inconsistencia.find_element_by_xpath(
         ".//button[@data-testid='btn_management_inconsistency-suggestion-adjust']").click()
     time.sleep(1)
-    element_sibling = tr_inconsistencia.find_element_by_xpath(
+    element_suggestion = tr_inconsistencia.find_element_by_xpath(
         "following-sibling::tr")
-    return element_sibling
+    return element_suggestion
 
 
-def obter_horarios(element_sibling):
+def obter_horarios(element_suggestion):
 
-    els = element_sibling.find_elements_by_xpath(".//time[ contains(@data-testid,'type')]")
+    els = element_suggestion.find_elements_by_xpath(".//time[ contains(@data-testid,'type')]")
 
     gen_entradas = ( e.get_attribute("datetime") for i,e in  enumerate(els) if i % 2 == 0)
     gen_saidas = ( e.get_attribute("datetime") for i,e in  enumerate(els) if i % 2 != 0)
@@ -113,8 +113,8 @@ def obter_horarios(element_sibling):
     return tuple(zip(str_entradas, str_saidas))
 
 
-def aprovar(element_sibling):
-    element_sibling.find_element_by_xpath(
+def aprovar(element_suggestion):
+    element_suggestion.find_element_by_xpath(
         ".//button[@data-testid='btn_timesheet_exp_approve']").click()
     time.sleep(1)
 
@@ -123,11 +123,11 @@ def processa_inconsistencias(element_inconsistencias):
     for inconsistencia in element_inconsistencias:
         nome = obter_nome_colaborador(inconsistencia)
         try:
-            element_sibling = obter_siblig(inconsistencia)
+            element_suggestion = obter_element_suggestion(inconsistencia)
         except NoSuchElementException as e:
-            print(f"Existe um apontamento inconsistente para {nome}, entretando não há sugestão de ajuste para ser aprovado")
+            print(f"Existe um apontamento inconsistente para {nome}, entretando não há sugestão de ajuste para ser aprovada.")
             continue
-        str_horarios = obter_horarios(element_sibling)
+        str_horarios = obter_horarios(element_suggestion)
         horarios, periodo_trabalhado, eh_final_de_semana, horas_extras, possui_horas_extras = calcular_horas(str_horarios)
 
         inconsistencia = Inconsistencia(
@@ -142,13 +142,13 @@ def processa_inconsistencias(element_inconsistencias):
 
         if not possui_horas_extras:
             print(f"Aprovando automaticamente - {inconsistencia.nome} - {inconsistencia.str_horarios()} - Extra {inconsistencia.horas_extras} ")
-            aprovar(element_sibling)
+            aprovar(element_suggestion)
         else:
             print(f"{'Aprovação manual'.ljust(25, ' ')} - {inconsistencia.nome} - {inconsistencia.str_horarios()} - Extra {inconsistencia.horas_extras} - Aprova? s/n")
             acao = input()
             if acao.lower() == 's':
                 print("Aprovando...")
-                aprovar(element_sibling)
+                aprovar(element_suggestion)
             else:
                 print("Não aprovando...")
 
