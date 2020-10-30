@@ -136,19 +136,23 @@ def processa_inconsistencias(element_inconsistencias):
             eh_final_de_semana,
             str(periodo_trabalhado),
             possui_horas_extras,
-            str(horas_extras))
+            str(horas_extras),
+            element_suggestion)
 
         dados.append(inconsistencia)
+    return dados
 
-        if not possui_horas_extras:
+def aprovar_inconsistencias(inconsistencias):
+    for inconsistencia in sorted(inconsistencias, key=lambda i: i.possui_horas_extras):
+        if not inconsistencia.possui_horas_extras:
             print(f"Aprovando automaticamente - {inconsistencia.nome} - {inconsistencia.str_horarios()} - Extra {inconsistencia.horas_extras} ")
-            aprovar(element_suggestion)
+            aprovar(inconsistencia.element_suggestion)
         else:
             print(f"{'Aprovação manual'.ljust(25, ' ')} - {inconsistencia.nome} - {inconsistencia.str_horarios()} - Extra {inconsistencia.horas_extras} - Aprova? s/n")
             acao = input()
             if acao.lower() == 's':
                 print("Aprovando...")
-                aprovar(element_suggestion)
+                aprovar(inconsistencia.element_suggestion)
             else:
                 print("Não aprovando...")
 
@@ -159,7 +163,8 @@ def executar():
         login()
         ir_para_inconsistencias()
         element_inconsistencias = obter_inconsistencias()
-        dados =  processa_inconsistencias(element_inconsistencias)
+        inconsistencias =  processa_inconsistencias(element_inconsistencias)
+        aprovar_inconsistencias(inconsistencias)
     except Exception as e:
         print(f"Ocorreu um erro ({type(e)}): ", e)
     else:

@@ -1,11 +1,12 @@
 class Inconsistencia:
-    def __init__(self, nome, horarios, eh_final_de_semana, periodo_trabalhado, possui_horas_extras, horas_extras):
+    def __init__(self, nome, horarios, eh_final_de_semana, periodo_trabalhado, possui_horas_extras, horas_extras, element_suggestion):
         self.nome = nome
         self.horarios = horarios
         self.eh_final_de_semana = eh_final_de_semana
         self.periodo_trabalhado = periodo_trabalhado
         self.possui_horas_extras = possui_horas_extras
         self.horas_extras = horas_extras
+        self.element_suggestion = element_suggestion
 
     def str_horarios(self):
         str_horarios = []
