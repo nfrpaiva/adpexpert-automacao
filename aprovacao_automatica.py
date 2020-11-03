@@ -124,12 +124,14 @@ def processa_inconsistencias(element_inconsistencias):
         nome = obter_nome_colaborador(inconsistencia)
         try:
             element_suggestion = obter_element_suggestion(inconsistencia)
+            str_horarios = obter_horarios(element_suggestion)
+            horarios, periodo_trabalhado, eh_final_de_semana, horas_extras, possui_horas_extras = calcular_horas(str_horarios)
         except NoSuchElementException as e:
             print(f"Existe um apontamento inconsistente para {nome}, entretando não há sugestão de ajuste para ser aprovada.")
             continue
-        str_horarios = obter_horarios(element_suggestion)
-        horarios, periodo_trabalhado, eh_final_de_semana, horas_extras, possui_horas_extras = calcular_horas(str_horarios)
-
+        except Exception as e:
+            print(f"Algo aconteceu e não foi possível processar a inconsistencias para o colaborador {nome}. Erro:({type(e)}) ")
+            continue
         inconsistencia = Inconsistencia(
             nome,
             horarios,
