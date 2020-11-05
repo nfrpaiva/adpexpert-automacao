@@ -158,6 +158,19 @@ def aprovar_inconsistencias(inconsistencias):
             else:
                 print("Não aprovando...")
 
+def imprimir_inconsistencias(inconsistencias):
+    for inconsistencia in sorted(inconsistencias, key = lambda i: i.possui_horas_extras):
+        print(f"Nome: {inconsistencia.nome.ljust(50, ' ')}", f" - {inconsistencia.str_horarios()}", f"Extra {inconsistencia.horas_extras}")
+
+def aprovar_tudo(inconsistencias):
+    print(f"Aprovar tudo? s/n")
+    acao =  input()
+    if acao.lower() == 's':
+        for i in inconsistencias:
+            print(f"Aprovando {i.nome} - {i.str_horarios()}")
+            aprovar(i.element_suggestion)
+        return True
+    return False
 
 def executar():
     try:
@@ -166,7 +179,10 @@ def executar():
         ir_para_inconsistencias()
         element_inconsistencias = obter_inconsistencias()
         inconsistencias =  processa_inconsistencias(element_inconsistencias)
-        aprovar_inconsistencias(inconsistencias)
+        imprimir_inconsistencias(inconsistencias)
+        if not aprovar_tudo(inconsistencias):
+            aprovar_inconsistencias(inconsistencias)
+
     except Exception as e:
         print(f"Ocorreu um erro ({type(e)}): ", e)
     else:
