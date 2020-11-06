@@ -163,13 +163,14 @@ def imprimir_inconsistencias(inconsistencias):
         print(f"Nome: {inconsistencia.nome.ljust(50, ' ')}", f" - {inconsistencia.str_horarios()}", f"Extra {inconsistencia.horas_extras}")
 
 def aprovar_tudo(inconsistencias):
-    print(f"Aprovar tudo? s/n")
-    acao =  input()
-    if acao.lower() == 's':
-        for i in inconsistencias:
-            print(f"Aprovando {i.nome} - {i.str_horarios()}")
-            aprovar(i.element_suggestion)
-        return True
+    if(inconsistencias):
+        print(f"Aprovar tudo? s/n")
+        acao =  input()
+        if acao.lower() == 's':
+            for i in inconsistencias:
+                print(f"Aprovando {i.nome} - {i.str_horarios()}")
+                aprovar(i.element_suggestion)
+            return True
     return False
 
 def executar():
