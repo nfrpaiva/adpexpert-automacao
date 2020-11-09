@@ -114,8 +114,8 @@ def obter_horarios(element_suggestion):
 
 
 def aprovar(element_suggestion):
-    element_suggestion.find_element_by_xpath(
-        ".//button[@data-testid='btn_timesheet_exp_approve']").click()
+    element = element_suggestion.find_element_by_xpath(".//button[@data-testid='btn_timesheet_exp_approve']")
+    driver.execute_script("arguments[0].click();", element)
     time.sleep(1)
 
 def processa_inconsistencias(element_inconsistencias):
