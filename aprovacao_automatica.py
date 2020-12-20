@@ -5,6 +5,8 @@ import time
 import datetime
 from dotenv import load_dotenv
 import os
+import config
+
 load_dotenv()
 
 username = os.getenv('ADP_USER')
@@ -115,8 +117,9 @@ def obter_horarios(element_suggestion):
 
 def aprovar(element_suggestion):
     element = element_suggestion.find_element_by_xpath(".//button[@data-testid='btn_timesheet_exp_approve']")
-    driver.execute_script("arguments[0].click();", element)
-    time.sleep(1)
+    if not config.read_only:
+        driver.execute_script("arguments[0].click();", element)
+        time.sleep(1)
 
 def processa_inconsistencias(element_inconsistencias):
     dados = []
@@ -164,8 +167,11 @@ def imprimir_inconsistencias(inconsistencias):
 
 def aprovar_tudo(inconsistencias):
     if(inconsistencias):
-        print(f"Aprovar tudo? s/n")
-        acao =  input()
+        if not config.unattended:
+            print(f"Aprovar tudo? s/n")
+            acao = input()
+        else:
+            acao = "s"
         if acao.lower() == 's':
             for i in inconsistencias:
                 print(f"Aprovando {i.nome} - {i.str_horarios()}")
