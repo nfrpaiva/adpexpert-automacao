@@ -174,8 +174,8 @@ def aprovar_tudo(inconsistencias):
             acao = "s"
         if acao.lower() == 's':
             for i in inconsistencias:
-                print(f"Aprovando {i.nome} - {i.str_horarios()}")
                 aprovar(i.element_suggestion)
+            print(f"{len(inconsistencias)} inconsistencias aprovadas")
             return True
     return False
 
