@@ -1,16 +1,16 @@
 from model import Inconsistencia
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+
+import db
+
 import time
 import datetime
-from dotenv import load_dotenv
 import os
 import config
 
-load_dotenv()
-
-username = os.getenv('ADP_USER')
-password = os.getenv('ADP_PASSWORD')
+username = config.adp_username
+password = config.adp_password
 
 options = webdriver.ChromeOptions()
 
@@ -178,6 +178,10 @@ def aprovar_tudo(inconsistencias):
             print(f"{len(inconsistencias)} inconsistencias aprovadas")
             return True
     return False
+
+def gravar_dados_no_banco(inconsistencias):
+    for i in inconsistencias:
+        db.inserir_apontamento(i.horarios[0][0],i.nome,i.horas_extras)
 
 def executar():
     try:
