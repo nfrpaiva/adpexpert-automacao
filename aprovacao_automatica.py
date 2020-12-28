@@ -180,8 +180,9 @@ def aprovar_tudo(inconsistencias):
     return False
 
 def gravar_dados_no_banco(inconsistencias):
-    for i in inconsistencias:
-        db.inserir_apontamento(i.horarios[0][0],i.nome,i.horas_extras)
+    if inconsistencias:
+        for i in inconsistencias:
+            db.inserir_apontamento(i.horarios[0][0],i.nome,i.horas_extras)
 
 def executar():
     try:
@@ -193,7 +194,7 @@ def executar():
         imprimir_inconsistencias(inconsistencias)
         if not aprovar_tudo(inconsistencias):
             aprovar_inconsistencias(inconsistencias)
-
+        gravar_dados_no_banco(inconsistencias)
     except Exception as e:
         print(f"Ocorreu um erro ({type(e)}): ", e)
     else:
