@@ -12,7 +12,7 @@ def inserir_apontamento(data, colaborador, extra):
     dados =  (data, colaborador, extra)
     try:
         with conn.cursor() as cur:
-            cur.execute("insert into apontamento (data, colaborador, extra) values (%s,%s,%s)", dados)
+            cur.execute("insert into apontamento (data, colaborador, extra) values (%s,%s,justify_interval(%s))", dados)
         if not config.read_only:
             conn.commit()
         else:
