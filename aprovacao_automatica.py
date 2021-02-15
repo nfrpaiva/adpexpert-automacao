@@ -19,6 +19,7 @@ options.add_argument('headless')
 
 driver = webdriver.Chrome(options=options)
 
+
 def abrir_pagina():
     driver.maximize_window()
     driver.get('http://www.adpexpert.com.br')
@@ -103,11 +104,13 @@ def obter_element_suggestion(tr_inconsistencia):
 
 def obter_horarios(element_suggestion):
 
-    els = element_suggestion.find_elements_by_xpath(".//time[ contains(@data-testid,'type')]")
+    els = element_suggestion.find_elements_by_xpath(
+        ".//time[ contains(@data-testid,'type')]")
 
-    gen_entradas = ( e.get_attribute("datetime") for i,e in  enumerate(els) if i % 2 == 0)
-    gen_saidas = ( e.get_attribute("datetime") for i,e in  enumerate(els) if i % 2 != 0)
-
+    gen_entradas = (e.get_attribute("datetime")
+                    for i, e in enumerate(els) if i % 2 == 0)
+    gen_saidas = (e.get_attribute("datetime")
+                  for i, e in enumerate(els) if i % 2 != 0)
 
     str_entradas = tuple(gen_entradas)
     str_saidas = tuple(gen_saidas)
@@ -116,10 +119,12 @@ def obter_horarios(element_suggestion):
 
 
 def aprovar(element_suggestion):
-    element = element_suggestion.find_element_by_xpath(".//button[@data-testid='btn_timesheet_exp_approve']")
+    element = element_suggestion.find_element_by_xpath(
+        ".//button[@data-testid='btn_timesheet_exp_approve']")
     if not config.read_only:
         driver.execute_script("arguments[0].click();", element)
         time.sleep(1)
+
 
 def processa_inconsistencias(element_inconsistencias):
     dados = []
@@ -128,12 +133,15 @@ def processa_inconsistencias(element_inconsistencias):
         try:
             element_suggestion = obter_element_suggestion(inconsistencia)
             str_horarios = obter_horarios(element_suggestion)
-            horarios, periodo_trabalhado, eh_final_de_semana, horas_extras, possui_horas_extras = calcular_horas(str_horarios)
+            horarios, periodo_trabalhado, eh_final_de_semana, horas_extras, possui_horas_extras = calcular_horas(
+                str_horarios)
         except NoSuchElementException as e:
-            print(f"Existe um apontamento inconsistente para {nome}, entretando não há sugestão de ajuste para ser aprovada.")
+            print(
+                f"Existe um apontamento inconsistente para {nome}, entretando não há sugestão de ajuste para ser aprovada.")
             continue
         except Exception as e:
-            print(f"Algo aconteceu e não foi possível processar a inconsistencias para o colaborador {nome}. Erro:({type(e)}) ")
+            print(
+                f"Algo aconteceu e não foi possível processar a inconsistencias para o colaborador {nome}. Erro:({type(e)}) ")
             continue
         inconsistencia = Inconsistencia(
             nome,
@@ -147,10 +155,12 @@ def processa_inconsistencias(element_inconsistencias):
         dados.append(inconsistencia)
     return dados
 
+
 def aprovar_inconsistencias(inconsistencias):
     for inconsistencia in sorted(inconsistencias, key=lambda i: i.possui_horas_extras):
         if not inconsistencia.possui_horas_extras:
-            print(f"Aprovando automaticamente - {inconsistencia.nome} - {inconsistencia.str_horarios()} - Extra {inconsistencia.horas_extras} ")
+            print(
+                f"Aprovando automaticamente - {inconsistencia.nome} - {inconsistencia.str_horarios()} - Extra {inconsistencia.horas_extras} ")
             aprovar(inconsistencia.element_suggestion)
         else:
             print(f"{'Aprovação manual'.ljust(25, ' ')} - {inconsistencia.nome} - {inconsistencia.str_horarios()} - Extra {inconsistencia.horas_extras} - Aprova? s/n")
@@ -161,9 +171,12 @@ def aprovar_inconsistencias(inconsistencias):
             else:
                 print("Não aprovando...")
 
+
 def imprimir_inconsistencias(inconsistencias):
-    for inconsistencia in sorted(inconsistencias, key = lambda i: i.possui_horas_extras):
-        print(f"Nome: {inconsistencia.nome.ljust(50, ' ')}", f" - {inconsistencia.str_horarios()}", f"Extra {inconsistencia.horas_extras}")
+    for inconsistencia in sorted(inconsistencias, key=lambda i: i.possui_horas_extras):
+        print(f"Nome: {inconsistencia.nome.ljust(50, ' ')}",
+              f" - {inconsistencia.str_horarios()}", f"Extra {inconsistencia.horas_extras}")
+
 
 def aprovar_tudo(inconsistencias):
     if(inconsistencias):
@@ -179,10 +192,12 @@ def aprovar_tudo(inconsistencias):
             return True
     return False
 
+
 def gravar_dados_no_banco(inconsistencias):
     if inconsistencias:
         for i in inconsistencias:
-            db.inserir_apontamento(i.horarios[0][0],i.nome,i.horas_extras)
+            db.inserir_apontamento(i.horarios[0][0], i.nome, i.horas_extras)
+
 
 def executar():
     try:
@@ -190,7 +205,7 @@ def executar():
         login()
         ir_para_inconsistencias()
         element_inconsistencias = obter_inconsistencias()
-        inconsistencias =  processa_inconsistencias(element_inconsistencias)
+        inconsistencias = processa_inconsistencias(element_inconsistencias)
         imprimir_inconsistencias(inconsistencias)
         if not aprovar_tudo(inconsistencias):
             aprovar_inconsistencias(inconsistencias)
