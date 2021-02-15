@@ -12,6 +12,7 @@ Com esse script posso fazer a aprovação dos ajustes automáticamente desde que
 - Python
 - [Chromedrive](https://chromedriver.chromium.org/downloads) 
 - [Selenium](https://www.selenium.dev/documentation/en/)
+- Banco de dados postgres instalado e configurado
 
 ### Instalar dependências
 ```python
@@ -23,6 +24,10 @@ pip install -r requirements.txt
 # Executar na pasta do projeto
 echo "ADP_USER={SEU_USUÁRIO}" >> .env
 echo "ADP_PASSWORD={SUA_SENHA}" >> .env
+echo "DB_USER" >> .env
+echo "DB_PASSWORD" >> .env
+echo "DB_HOST" >> .env
+echo "DB_DATABASE" >> .env
 ```
 
 ## Executar
