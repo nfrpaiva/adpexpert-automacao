@@ -43,9 +43,9 @@ def login():
 
 def ir_para_inconsistencias():
     # Clicar no botao colaborador para exibir o botão Gerente
-    element_colaborado = driver.find_element_by_xpath(
+    driver.find_element_by_xpath(
         "//button[@data-testid='btn_navigation_side_bar-employee-selected-desktop']").click()
-    element_colaborado = driver.find_element_by_xpath(
+    driver.find_element_by_xpath(
         "//button[@data-testid='btn_navigation_side_bar-manager-desktop']").click()
     time.sleep(2)
 
@@ -94,7 +94,7 @@ def obter_nome_colaborador(tr_inconsistencia):
 
 
 def obter_element_suggestion(tr_inconsistencia):
-    element_button_ajustes = tr_inconsistencia.find_element_by_xpath(
+    tr_inconsistencia.find_element_by_xpath(
         ".//button[@data-testid='btn_management_inconsistency-suggestion-adjust']").click()
     time.sleep(1)
     element_suggestion = tr_inconsistencia.find_element_by_xpath(
