@@ -11,6 +11,7 @@ import config
 
 username = config.adp_username
 password = config.adp_password
+url = config.url
 
 options = webdriver.ChromeOptions()
 
@@ -22,23 +23,29 @@ driver = webdriver.Chrome(options=options)
 
 def abrir_pagina():
     driver.maximize_window()
-    driver.get('http://www.adpexpert.com.br')
+    driver.get(url)
     time.sleep(1)
     return driver
 
 
 def login():
     # Preencher dados para Loging
-    element_login = driver.find_element_by_id('login')
-    element_password = driver.find_element_by_id('login-pw')
-
-    element_login.send_keys(username)
+    element_email = driver.find_element_by_name("loginfmt")
+    #element_login = driver.find_element_by_id('login')
+    element_email.send_keys(username)
+    element_avancar = driver.find_element_by_xpath("//input[@type='submit']")
+    element_avancar.click()
+    time.sleep(5)
+    element_password = driver.find_element_by_id("passwordInput")
     element_password.send_keys(password)
+    element_login = driver.find_element_by_id("submitButton")
+    element_login.click()
 
-    # Fazer o Login
-    loggin_button = driver.find_element_by_xpath('//form//button')
-    loggin_button.click()
-    time.sleep(2)
+    time.sleep(5)
+    element_confirmar_manter_login = driver.find_element_by_xpath(
+        "//input[@type='submit']")
+    element_confirmar_manter_login.click()
+    time.sleep(10)
 
 
 def ir_para_inconsistencias():

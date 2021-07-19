@@ -8,6 +8,8 @@ load_dotenv()
 adp_username = os.getenv('ADP_USER')
 adp_password = os.getenv('ADP_PASSWORD')
 
+url = os.getenv("URL")
+
 db_user = os.getenv('DB_USER')
 db_password = os.getenv('DB_PASSWORD')
 db_host = os.getenv('DB_HOST')
