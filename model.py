@@ -15,4 +15,4 @@ class Inconsistencia:
         return "//".join(str_horarios)
 
     def __str__(self):
-        return f"Horarios: {self.str_horarios()} Final de semana {self.eh_final_de_semana} - Período Trabalhado: {self.periodo_trabalhado} - Horas Extras: {self.horas_extras} - Colaborador: {self.nome}"
+        return f"Horários: {self.str_horarios()} Final de semana {self.eh_final_de_semana} - Período Trabalhado: {self.periodo_trabalhado} - Horas Extras: {self.horas_extras} - Colaborador: {self.nome}"
